@@ -1,7 +1,6 @@
 import os
 from setuptools import setup, find_packages
 from distutils.extension import Extension
-from Cython.Build import cythonize
 
 def read(fname):
     """Read a file and return its content."""
@@ -15,10 +14,10 @@ setup(
     long_description=read("README.md"),
     packages=find_packages(exclude=[]),
     install_requires=[
-        "cython==0.29.7"
     ],
     extras_require={
         "dev": [
+            "cython==0.29.7"
         ]
     },
     setup_requires=[],

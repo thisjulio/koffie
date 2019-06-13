@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f8df29bf3a2c5c84cfcfc622d674de5f2364d86841ed0d169f7e36202969bf7f"
+            "sha256": "a50ab45cc478f91e83300fc8e93149291b7072c4150b831f69acff85591abcde"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -20,13 +20,6 @@
         }
     },
     "develop": {
-        "coffee": {
-            "editable": true,
-            "extras": [
-                "dev"
-            ],
-            "path": "."
-        },
         "cython": {
             "hashes": [
                 "sha256:0ce8f6c789c907472c9084a44b625eba76a85d0189513de1497ab102a9d39ef8",
