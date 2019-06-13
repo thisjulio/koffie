@@ -141,6 +141,6 @@ __pycache__
 .*cache*/
 *venv*/
 
-_coffee.c
+_koffie.c
 
 .vscode

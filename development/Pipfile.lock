@@ -16,7 +16,7 @@
         ]
     },
     "default": {
-        "coffee": {
+        "koffie": {
             "editable": true,
             "path": "./.."
         },

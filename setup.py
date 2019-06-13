@@ -8,8 +8,8 @@ def read(fname):
         return f.read()
 
 setup(
-    name="coffee",
-    version="1.0.0",
+    name="koffie",
+    version="0.1.0",
     description="Lightweight and minimalist framework for python web app",
     long_description=read("README.md"),
     packages=find_packages(exclude=[]),
@@ -20,5 +20,5 @@ setup(
     },
     setup_requires=[],
     tests_require=[],
-    ext_modules = [Extension("coffee._coffee", ["coffee/_coffee.pyx"], language="c", libraries=["event"])]
+    ext_modules = [Extension("koffie._koffie", ["koffie/_koffie.pyx"], language="c", libraries=["event"])]
 )
