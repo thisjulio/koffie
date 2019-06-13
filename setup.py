@@ -12,6 +12,7 @@ setup(
     version="0.1.0",
     description="Lightweight and minimalist framework for python web app",
     long_description=read("README.md"),
+    long_description_content_type="text/markdown",
     packages=find_packages(exclude=[]),
     install_requires=[
         "cython"
