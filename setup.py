@@ -14,13 +14,11 @@ setup(
     long_description=read("README.md"),
     packages=find_packages(exclude=[]),
     install_requires=[
+        "cython"
     ],
     extras_require={
-        "dev": [
-            "cython==0.29.7"
-        ]
     },
     setup_requires=[],
     tests_require=[],
-    ext_modules = [Extension("coffee", ["coffee.pyx"], language="c", libraries=["event"])]
+    ext_modules = [Extension("coffee._coffee", ["coffee/_coffee.pyx"], language="c", libraries=["event"])]
 )
