@@ -3,6 +3,38 @@ from libc.stdio cimport printf
 from libc.stdlib cimport malloc, free
 cimport koffie._libevent as libevent
 
+ctypedef struct KFServer:
+    libevent.event_base* base
+    libevent.evhttp* http
+
+cdef class Server:
+    cdef KFServer* _server
+    cdef libevent.event* _interrupt
+
+    def __cinit__(self):
+        self._server = <KFServer*> malloc(sizeof(KFServer*))
+        # Create a new event handler
+        self._server.base = libevent.event_base_new()
+        # Create a http server using that handler
+        self._server.http = libevent.evhttp_new(self._server.base)
+        # Add interrupt event
+        self._interrupt = libevent.evsignal_new(self._server.base, SIGINT, quick_shutdown, self._server.base);
+        libevent.event_add(self._interrupt, NULL);
+    
+    def listen(self, int port, bytes address):
+        # Listen on address:port
+        if (libevent.evhttp_bind_socket(self._server.http, address, <libevent.ev_uint16_t>port) != 0):
+            pass #need to raise error!!!!
+        libevent.event_base_dispatch(self._server.base)
+
+    def __dealloc__(self):
+        # Free up stuff
+        libevent.evhttp_free(self._server.http)
+        libevent.event_base_free(self._server.base)
+        free(self._interrupt)
+        free(self._server)
+
+
 cdef void quick_shutdown(libevent.evutil_socket_t _, short what, void *ctx) nogil:
     cdef libevent.event_base *evb = <libevent.event_base *>ctx
     printf("\nq-shutdown...\n")
@@ -50,38 +82,39 @@ def test():
         i**i
 
 cpdef run_server():
-    cdef libevent.event_base *ebase = NULL
-    cdef libevent.evhttp *server = NULL
+    # cdef libevent.event_base *ebase = NULL
+    # cdef libevent.evhttp *server = NULL
     
-    # Create a new event handler
-    ebase = libevent.event_base_new()
+    # # Create a new event handler
+    # ebase = libevent.event_base_new()
 
-    # Create a http server using that handler
-    server = libevent.evhttp_new(ebase)
+    # # Create a http server using that handler
+    # server = libevent.evhttp_new(ebase)
 
-    # Add interrupt event
-    cdef libevent.event *interrupt = libevent.evsignal_new(ebase, SIGINT, quick_shutdown, ebase);
-    libevent.event_add(interrupt, NULL);
+    # # Add interrupt event
+    # cdef libevent.event *interrupt = libevent.evsignal_new(ebase, SIGINT, quick_shutdown, ebase);
+    # libevent.event_add(interrupt, NULL);
 
     # Limit serving GET requests
     #evhttp_set_allowed_methods (server, EVHTTP_REQ_GET)
 
     # Set a test callback, /testing
-    libevent.evhttp_set_cb(server, "/testing", testing, <void *> test)
+    # libevent.evhttp_set_cb(server, "/testing", testing, <void *> test)
 
-    # Set the callback for anything not recognized
-    libevent.evhttp_set_gencb(server, notfound, NULL)
+    # # Set the callback for anything not recognized
+    # libevent.evhttp_set_gencb(server, notfound, NULL)
 
-    # Listen locally on port 32001
-    if (libevent.evhttp_bind_socket(server, "127.0.0.1", <libevent.ev_uint16_t>32001) != 0):
-        return 1
+    # # Listen locally on port 32001
+    # if (libevent.evhttp_bind_socket(server, "127.0.0.1", <libevent.ev_uint16_t>32001) != 0):
+    #     return 1
 
-    # Start processing queries
-    libevent.event_base_dispatch(ebase)
+    # # Start processing queries
+    # libevent.event_base_dispatch(ebase)
 
-    # Free up stuff
-    libevent.evhttp_free(server)
+    # # Free up stuff
+    # libevent.evhttp_free(server)
 
-    libevent.event_base_free(ebase)
+    # libevent.event_base_free(ebase)
 
-    return 0
+    # return 0
+    pass
