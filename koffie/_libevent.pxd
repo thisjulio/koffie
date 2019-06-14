@@ -1,10 +1,8 @@
-# Libevent includes
-cdef extern from "<sys/time.h>" nogil:
-    cdef struct timeval
+from posix.time cimport timeval
 
+# Libevent includes
 cdef extern from "<evhttp.h>" nogil:
     # DEFINES
-    cdef event *evsignal_new "evsignal_new"
     cdef int HTTP_NOTFOUND "HTTP_NOTFOUND"
     cdef int HTTP_OK "HTTP_OK"
     # STRUCTS
@@ -36,6 +34,7 @@ cdef extern from "<evhttp.h>" nogil:
     cdef size_t evbuffer_get_length(const evbuffer *buf)
     cdef ev_ssize_t evbuffer_copyout(evbuffer *buf, void *data_out, size_t datlen)
     cdef evkeyvalq *evhttp_request_get_output_headers(evhttp_request *req)
+    cdef event *evsignal_new(event_base *, evutil_socket_t, void (evutil_socket_t, short, void *), void *)
     cdef void evhttp_send_reply(evhttp_request *req, int code, const char *reason, evbuffer *databuf)
     cdef void evhttp_clear_headers(evkeyvalq *headers)
     cdef void evbuffer_free(evbuffer *buf)

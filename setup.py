@@ -1,6 +1,7 @@
 import os
 from setuptools import setup, find_packages
 from distutils.extension import Extension
+from Cython.Build import cythonize
 
 def read(fname):
     """Read a file and return its content."""
@@ -21,5 +22,5 @@ setup(
     },
     setup_requires=[],
     tests_require=[],
-    ext_modules = [Extension("koffie._koffie", ["koffie/_koffie.pyx"], language="c", libraries=["event"])]
+    ext_modules = cythonize([Extension("koffie._koffie", ["koffie/_koffie.pyx"], language="c", libraries=["event"])], language_level="3")
 )
