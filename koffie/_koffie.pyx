@@ -7,6 +7,38 @@ ctypedef struct KFServer:
     libevent.event_base* base
     libevent.evhttp* http
 
+ctypedef libevent.evhttp_request KFRequest
+
+ctypedef libevent.evbuffer KFBuffer
+
+cdef class Request:
+    cdef KFRequest* _request
+
+    def __cinit__(self):
+        self._request = NULL
+
+    cdef __setup__(self, KFRequest* request):
+        self._request = request
+
+
+cdef class Response:
+    cdef KFRequest* _request
+    cdef KFBuffer* _buffer
+
+    def set_body(self,const char* body):
+        libevent.evbuffer_add(self._buffer,<void*> body, len(body))
+
+    def __cinit__(self):
+        self._request = NULL
+        self._buffer = NULL
+
+    cdef __setup__(self, KFRequest* request):
+        self._request = request
+        self._buffer = libevent.evbuffer_new()
+
+    def __dealloc__(self):
+        libevent.evbuffer_free(self._buffer)
+
 cdef class Server:
     cdef KFServer* _server
     cdef libevent.event* _interrupt
@@ -27,6 +59,9 @@ cdef class Server:
             pass #need to raise error!!!!
         libevent.event_base_dispatch(self._server.base)
 
+    def register_endpoint(self,path,resolve_fn):
+        libevent.evhttp_set_cb(self._server.http, path, register_endpoint_cb, <void *> resolve_fn)
+
     def __dealloc__(self):
         # Free up stuff
         libevent.evhttp_free(self._server.http)
@@ -42,6 +77,16 @@ cdef void quick_shutdown(libevent.evutil_socket_t _, short what, void *ctx) nogi
 
 cdef void notfound (libevent.evhttp_request *request, void *params) nogil:
     libevent.evhttp_send_error(request, libevent.HTTP_NOTFOUND, b"Not Found")
+
+cdef void register_endpoint_cb(libevent.evhttp_request *request, void *privParams) nogil:
+    with gil:
+        kf_request = Request()
+        kf_response = Response()
+        kf_request.__setup__(request)
+        kf_response.__setup__(request)
+        (<object> privParams)(kf_request,kf_response)
+        libevent.evhttp_send_reply(request, libevent.HTTP_OK, b"OK", kf_response._buffer)
+
 
 cdef void testing(libevent.evhttp_request *request, void *privParams) nogil:
     cdef libevent.evbuffer *buffer = NULL
