@@ -11,14 +11,34 @@ ctypedef libevent.evhttp_request KFRequest
 
 ctypedef libevent.evbuffer KFBuffer
 
+ctypedef libevent.evkeyvalq KFKeyVal
+ 
+#https://github.com/ppelleti/https-example/blob/master/https-server.c
+
 cdef class Request:
     cdef KFRequest* _request
+    cdef char* _data_body
+
+    def get_body(self):
+        return self._data_body
 
     def __cinit__(self):
         self._request = NULL
+        self._data_body = NULL
 
     cdef __setup__(self, KFRequest* request):
         self._request = request
+        #Read data body
+        cdef size_t data_body_len = 0
+        cdef KFBuffer* buffer_body = libevent.evhttp_request_get_input_buffer(self._request)
+        data_body_len = libevent.evbuffer_get_length(buffer_body)
+        self._data_body = <char*> malloc(data_body_len + 1)
+        self._data_body[data_body_len] = 0
+        libevent.evbuffer_remove(buffer_body, self._data_body, data_body_len)
+    
+    def __dealloc__(self):
+        free(self._data_body)
+
 
 
 cdef class Response:
@@ -121,45 +141,3 @@ cdef void testing(libevent.evhttp_request *request, void *privParams) nogil:
     libevent.evbuffer_free(buffer)
 
     free(headers)
-
-def test():
-    for i in range(10):
-        i**i
-
-cpdef run_server():
-    # cdef libevent.event_base *ebase = NULL
-    # cdef libevent.evhttp *server = NULL
-    
-    # # Create a new event handler
-    # ebase = libevent.event_base_new()
-
-    # # Create a http server using that handler
-    # server = libevent.evhttp_new(ebase)
-
-    # # Add interrupt event
-    # cdef libevent.event *interrupt = libevent.evsignal_new(ebase, SIGINT, quick_shutdown, ebase);
-    # libevent.event_add(interrupt, NULL);
-
-    # Limit serving GET requests
-    #evhttp_set_allowed_methods (server, EVHTTP_REQ_GET)
-
-    # Set a test callback, /testing
-    # libevent.evhttp_set_cb(server, "/testing", testing, <void *> test)
-
-    # # Set the callback for anything not recognized
-    # libevent.evhttp_set_gencb(server, notfound, NULL)
-
-    # # Listen locally on port 32001
-    # if (libevent.evhttp_bind_socket(server, "127.0.0.1", <libevent.ev_uint16_t>32001) != 0):
-    #     return 1
-
-    # # Start processing queries
-    # libevent.event_base_dispatch(ebase)
-
-    # # Free up stuff
-    # libevent.evhttp_free(server)
-
-    # libevent.event_base_free(ebase)
-
-    # return 0
-    pass

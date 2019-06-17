@@ -1,1 +1,1 @@
-from ._koffie import run_server, Server
+from ._koffie import Server

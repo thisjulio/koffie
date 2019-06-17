@@ -33,6 +33,7 @@ cdef extern from "<evhttp.h>" nogil:
     cdef evbuffer *evhttp_request_get_input_buffer(evhttp_request *req)
     cdef size_t evbuffer_get_length(const evbuffer *buf)
     cdef ev_ssize_t evbuffer_copyout(evbuffer *buf, void *data_out, size_t datlen)
+    cdef int evbuffer_remove(evbuffer *buf, void *data, size_t datlen)
     cdef evkeyvalq *evhttp_request_get_output_headers(evhttp_request *req)
     cdef event *evsignal_new(event_base *, evutil_socket_t, void (evutil_socket_t, short, void *), void *)
     cdef void evhttp_send_reply(evhttp_request *req, int code, const char *reason, evbuffer *databuf)

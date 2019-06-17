@@ -1,7 +1,10 @@
 import koffie
+import json
 
 def teste(req, res):
-    res.set_body(b"junda!!!\n")
+    a = req.get_body()
+    hw = ''#json.dumps(dict(hello="world!"))
+    res.set_body(hw.encode("utf8"))
 
 app = koffie.Server()
 
