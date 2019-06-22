@@ -22,5 +22,5 @@ setup(
     },
     setup_requires=[],
     tests_require=[],
-    ext_modules = cythonize([Extension("koffie._koffie", ["koffie/_koffie.pyx"], language="c", libraries=["event"])], language_level="3")
+    ext_modules = cythonize([Extension("koffie._koffie", ["koffie/_koffie.pyx"], language="c", libraries=["event", "event_openssl", "ssl", "crypto"])], language_level="3", gdb_debug=True)
 )

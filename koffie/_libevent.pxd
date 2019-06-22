@@ -1,4 +1,5 @@
 from posix.time cimport timeval
+from koffie._openssl cimport *
 
 # Libevent includes
 cdef extern from "<evhttp.h>" nogil:
@@ -25,6 +26,7 @@ cdef extern from "<evhttp.h>" nogil:
     cdef int evhttp_bind_socket(evhttp *http, const char *address, ev_uint16_t port)
     cdef int event_base_dispatch(event_base *)
     cdef int evhttp_set_cb(evhttp *http, const char *path, void (*cb)(evhttp_request *, void *), void *cb_arg)
+    cdef void evhttp_set_bevcb(evhttp *http, bufferevent *(*cb)(event_base *, void *), void *arg)
     cdef const char *evhttp_request_get_uri(const evhttp_request *req)
     cdef const char *evhttp_find_header(const evkeyvalq *headers, const char *key)
     cdef event_base *event_base_new()
@@ -43,3 +45,19 @@ cdef extern from "<evhttp.h>" nogil:
     cdef void evhttp_free(evhttp* http)
     cdef void event_base_free(event_base *)
     cdef void evhttp_send_error(evhttp_request *req, int error, const char *reason)
+
+cdef extern from "<event2/bufferevent.h>" nogil:
+    cdef struct bufferevent
+    cpdef enum bufferevent_options:
+        BEV_OPT_CLOSE_ON_FREE,
+        BEV_OPT_THREADSAFE,
+        BEV_OPT_DEFER_CALLBACKS,
+        BEV_OPT_UNLOCK_CALLBACKS
+
+cdef extern from "<event2/bufferevent_ssl.h>" nogil:
+    cpdef enum bufferevent_ssl_state:
+        BUFFEREVENT_SSL_OPEN = 0,
+        BUFFEREVENT_SSL_CONNECTING = 1,
+        BUFFEREVENT_SSL_ACCEPTING = 2
+    
+    cdef bufferevent* bufferevent_openssl_socket_new(event_base *base, evutil_socket_t fd, ssl_st *ssl, bufferevent_ssl_state state, int options)
