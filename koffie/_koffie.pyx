@@ -49,6 +49,9 @@ cdef class Response:
 
     def set_body(self,const char* body):
         libevent.evbuffer_add(self._buffer,<void*> body, len(body))
+    
+    def set_header(self, const char* key, const char* value):
+        libevent.evhttp_add_header(libevent.evhttp_request_get_output_headers(self._request), key, value)
 
     def __cinit__(self):
         self._request = NULL
