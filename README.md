@@ -20,7 +20,8 @@ $ pip install koffie
 ```sh
 cd development
 
-CFLAGS="-I /usr/local/include -L /usr/local/lib" pipenv install
+CFLAGS="-I /usr/local/include -I /usr/local/opt/openssl/include/ -L /usr/local/lib -L /usr/local/opt/
+openssl/lib/" pipenv install
 
 pipenv run python
 
