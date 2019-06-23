@@ -144,3 +144,5 @@ __pycache__
 _koffie.c
 
 .vscode
+cython_debug/cython_debug_info_koffie._koffie
+cython_debug/interpreter

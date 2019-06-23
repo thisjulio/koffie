@@ -66,7 +66,7 @@ cdef class Server:
     cdef libevent.event* _interrupt
 
     def __cinit__(self, const char* certificate_chain=NULL, const char* private_key=NULL):
-        self._server = <KFServer*> malloc(sizeof(KFServer*))
+        self._server = <KFServer*> malloc(sizeof(KFServer))
         # Create a new event handler
         self._server.base = libevent.event_base_new()
         
